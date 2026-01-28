@@ -5,44 +5,61 @@ import praktikum.Ingredient;
 import praktikum.IngredientType;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class BurgerNonParameterizedTest {
 
     @Test
-  public void canWeGiveBunNameAndPrice() {
+    public void setBuns_setsBunCorrectly() {
         Burger burger = new Burger();
-        Bun sesameBun = new Bun("Кунжутная булочка", 3.0f);
-        burger.setBuns(sesameBun);
-        assertEquals(burger.bun, sesameBun);
+        Bun bun = mock(Bun.class);
+
+        burger.setBuns(bun);
+
+        assertSame(bun, burger.bun);
     }
 
     @Test
-  public void canWeAddOneIngredient() {
+    public void addIngredient_addsIngredientToList() {
         Burger burger = new Burger();
-        Ingredient tomato = new Ingredient(IngredientType.FILLING, "Помидор", 10f);
-        burger.addIngredient(tomato);
+        Ingredient ingredient = mock(Ingredient.class);
+
+        burger.addIngredient(ingredient);
+
         assertEquals(1, burger.ingredients.size());
     }
 
     @Test
-    public void canWeAddTomatoIngredient() {
+    public void addIngredient_addsExactIngredient() {
         Burger burger = new Burger();
-        Ingredient tomato = new Ingredient(IngredientType.FILLING, "Помидор", 10f);
-        burger.addIngredient(tomato);
-        assertEquals(tomato, burger.ingredients.get(0));
+        Ingredient ingredient = mock(Ingredient.class);
+
+        burger.addIngredient(ingredient);
+
+        assertSame(ingredient, burger.ingredients.get(0));
     }
 
     @Test
-    public void shouldCorrectlyBurgerPrice() {
+    public void getPrice_returnsCorrectPrice() {
         Burger burger = new Burger();
-        Bun sesameBun = new Bun("Кунжутная булочка", 3.0f);
-        Ingredient tomato = new Ingredient(IngredientType.FILLING, "Помидор", 10f);
-        Ingredient cutlet = new Ingredient(IngredientType.FILLING, "Котлета", 5.0f);
-        Ingredient ketchup = new Ingredient(IngredientType.SAUCE, "Кетчуп", 1.0f);
-        burger.setBuns(sesameBun);
+
+        Bun bun = mock(Bun.class);
+        Ingredient tomato = mock(Ingredient.class);
+        Ingredient cutlet = mock(Ingredient.class);
+        Ingredient ketchup = mock(Ingredient.class);
+
+        when(bun.getPrice()).thenReturn(3.0f);
+        when(tomato.getPrice()).thenReturn(10.0f);
+        when(cutlet.getPrice()).thenReturn(5.0f);
+        when(ketchup.getPrice()).thenReturn(1.0f);
+
+        burger.setBuns(bun);
         burger.addIngredient(tomato);
         burger.addIngredient(cutlet);
         burger.addIngredient(ketchup);
-        assertEquals(22.0f, burger.getPrice(), 0.1f);
+
+        assertEquals(22.0f, burger.getPrice(), 0.01f);
     }
 }

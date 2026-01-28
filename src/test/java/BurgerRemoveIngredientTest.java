@@ -1,3 +1,4 @@
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -9,48 +10,60 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.mockito.Mockito.mock;
 
 @RunWith(Parameterized.class)
 public class BurgerRemoveIngredientTest {
 
-        private static final Ingredient CHEESE_SAUCE = new Ingredient(IngredientType.SAUCE, "Сырный соус", 1.0f);
-        private static final Ingredient TOMATO = new Ingredient(IngredientType.FILLING, "Помидор", 10f);
+    private Ingredient cheeseSauce;
+    private Ingredient tomato;
 
-        private final int indexToRemove;
-        private final int expectedSize;
-        private final Integer checkIndex;
-        private final Ingredient expectedIngredient;
+    private final int indexToRemove;
+    private final int expectedSize;
+    private final Integer checkIndex;
+    private final int expectedIngredientIndex;
 
     public BurgerRemoveIngredientTest(
             int indexToRemove,
             int expectedSize,
             Integer checkIndex,
-            Ingredient expectedIngredient
+            int expectedIngredientIndex
     ) {
         this.indexToRemove = indexToRemove;
         this.expectedSize = expectedSize;
         this.checkIndex = checkIndex;
-        this.expectedIngredient = expectedIngredient;
+        this.expectedIngredientIndex = expectedIngredientIndex;
     }
 
-        @Parameterized.Parameters
-        public static Collection<Object[]> data() {
-            return Arrays.asList(new Object[][]{
-                    {0, 1, 0, TOMATO},
-                    {1, 1, 0, CHEESE_SAUCE}
-            });
-        }
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() {
+        return Arrays.asList(new Object[][]{
+                {0, 1, 0, 1}, // удалили 0 → остался tomato
+                {1, 1, 0, 0}  // удалили 1 → остался cheeseSauce
+        });
+    }
 
-        @Test
-        public void removeIngredient_RemovesCorrectly() {
+    @Before
+    public void setUp() {
+        cheeseSauce = mock(Ingredient.class);
+        tomato = mock(Ingredient.class);
+    }
 
-            Burger burger = new Burger();
-            burger.addIngredient(CHEESE_SAUCE);
-            burger.addIngredient(TOMATO);
-            burger.removeIngredient(indexToRemove);
-            assertEquals(expectedSize, burger.ingredients.size());
-            if (checkIndex != null) {
-                assertEquals(expectedIngredient, burger.ingredients.get(checkIndex));
-            }
+    @Test
+    public void removeIngredient_removesIngredientCorrectly() {
+        Burger burger = new Burger();
+        burger.addIngredient(cheeseSauce);
+        burger.addIngredient(tomato);
+
+        burger.removeIngredient(indexToRemove);
+
+        assertEquals(expectedSize, burger.ingredients.size());
+
+        if (checkIndex != null) {
+            Ingredient[] source = {cheeseSauce, tomato};
+            assertSame(source[expectedIngredientIndex], burger.ingredients.get(checkIndex));
         }
     }
+}
+
